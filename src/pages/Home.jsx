@@ -1,26 +1,53 @@
 import React from 'react';
-import {  ProductBlock, Clothes, Categories, Hats, Footwear, Bags, SortPopup } from '../components';
+import { ProductBlock, Categories, SortPopup, ProductLoadingBlock } from '../components';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCategory, setSortBy } from '../redux/actions/filters';
+import { fetchProducts } from '../redux/actions/products';
 
-function Home({items}) {
-  // console.log(items);
+
+const categoryNames = ['Верхняя одежда', 'Нижняя одежда', 'Двойки', 'Платья', 'Обувь'];
+const sortItem = [
+  { name: 'популярности', type: 'popular' , order: 'desc'},
+  { name: 'цене', type: 'price', order: 'desc' },
+  { name: 'алфавиту', type: 'name', order: 'asc' },
+];
+
+function Home() {
+  const dispatch = useDispatch();
+  const items = useSelector(({ products }) => products.items);
+  const isLoaded = useSelector(({ products }) => products.isLoaded);
+  const { category, sortBy} = useSelector(({ filters }) => filters);
+
+  React.useEffect(() => {
+    dispatch(fetchProducts(sortBy, category));  
+    // eslint-disable-next-line react-hooks/exhaustive-deps  
+  }, [category, sortBy]);
+
+  const onSelectCategory = React.useCallback((index) => {
+    dispatch(setCategory(index));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onSelectSortType = React.useCallback((type) => {
+    dispatch(setSortBy(type));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="container">
       <div className="content__top">
-        <Categories
-          onClickItems={(name) => console.log(name)}
-          items={['Верхняя одежда', 'Нижняя одежда', 'Головные уборы', 'Аксессуары', 'Обувь']}
-        />
-
-        <SortPopup items={['популярности', 'цене', 'алфавиту']} />
+        <Categories activeCategory={category} onClickCategory={onSelectCategory} items={categoryNames} />
+        <SortPopup activeSortType= {sortBy.type} onClickSortType={onSelectSortType} items={sortItem} />
       </div>
       <h2 className="content__title">Все товары</h2>
-
       <div className="content__items">
-        {
-          items.map(obj => (
-          <ProductBlock key={obj.id} {...obj}/>
-          ))
-        }
+        {isLoaded 
+          ? items.map((obj) => <ProductBlock key={obj.id} isLoading ={true} {...obj} />)
+          : Array(10)
+          .fill(0)
+          .map((_, index) => <ProductLoadingBlock key={index}/>)}
+        
+        
         {/* <Clothes
           source={'https://th.bing.com/th/id/OIP.g9IJupk8OSvp3AYOSwRgvQHaHa?pid=ImgDet&rs=1'}
           itsalt={'Shirt'}

@@ -1,10 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-function SortPoPup({items}) {
+const SortPoPup = React.memo(function SortPoPup({items, onClickSortType, activeSortType}) {
   const [visiblePopup, setVisiblePopup] = React.useState(false); //Returns a stateful value, and a function to update it.
   const sortRef = React.useRef(); // returns a mutable ref object
-  const [activeItem, setActiveItem] = React.useState(1);
-  const activeLabel = items[activeItem]; 
+  const activeLabel = items.find((obj) => obj.type === activeSortType).name;
 
   const toggleVisiblePopup = () => {
     setVisiblePopup(!visiblePopup);
@@ -13,11 +13,11 @@ function SortPoPup({items}) {
   const handleOutsideClick = (e) => {
     if (!e.path.includes(sortRef.current)) {
       setVisiblePopup(false);
-      console.log('outside');
+      // console.log('outside');
     }
   }; 
   const onSelectItem = (index) => {
-    setActiveItem(index);
+    onClickSortType(index);
     setVisiblePopup(false);
   };
   //useEffect - Accepts a function that contains imperative, possibly effectful code.
@@ -51,13 +51,13 @@ function SortPoPup({items}) {
         <div className="sort__popup">
           <ul>
             {items &&
-              items.map((name, index) => (
+              items.map((obj, index) => (
                 <li
-                  onClick={() => onSelectItem(index)}
-                  className={activeItem === index ? 'active' : ''}
-                  key={`${name}_${index}`}
+                  onClick={() => onSelectItem(obj)}
+                  className={activeSortType === obj.type ? 'active' : ''}
+                  key={`${obj.type}_${index}`}
                 >
-                  {name}
+                  {obj.name}
                 </li>
               ))}
           </ul>
@@ -65,6 +65,13 @@ function SortPoPup({items}) {
       )}
     </div>
   );
-}
+})
+
+SortPoPup.propTypes = {
+  activeSortType: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onClickSortType: PropTypes.func.isRequired,
+};
+
 
 export default SortPoPup;

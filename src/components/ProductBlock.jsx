@@ -9,7 +9,7 @@ function ProductBlock({name, imageUrl, price, colors, sizes}) {
   const availableSizes = ['S', 'M', 'L', 'XL']; 
   const [activeSize, setActiveSize ] = React.useState(sizes[0]);
 
-  console.log(name, colors );
+  // console.log(name, colors );
 
   const onSelectColor = (index) => {
     setActiveColor(index);
@@ -51,7 +51,7 @@ function ProductBlock({name, imageUrl, price, colors, sizes}) {
         </ul>
       </div>
       <div className="product-block__bottom">
-        <div className="product-block__price">{price}</div>
+        <div className="product-block__price">{price} tg</div>
         <div className="button button--outline button--add">
           <svg
             width="12"
@@ -77,7 +77,7 @@ ProductBlock.propTypes = {
   name: PropTypes.string.isRequired,
   imageUrl: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-  colors: PropTypes.arrayOf([PropTypes.number]).isRequired,
+  // colors: PropTypes.arrayOf([PropTypes.number]).isRequired,
 
 };
 
